@@ -1,5 +1,8 @@
 // consumer problem.
 
+import org.jgraph.graph.BasicMarqueeHandler;
+
+import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -51,11 +54,17 @@ import java.util.Random;
     // This class has a list, producer (adds items to list 
     // and consumer (removes items).
 public class Machine implements ISubject, Runnable{
+    Thread t;
     LinkedList<Queue> queues;
     Queue queue_after;
     Product currentProduct;
     String id = "";
     boolean empty =  true;
+    public Machine(String id) {
+        this.setId(id);
+        t= new Thread(this, "Thread " + id);
+        t.start();
+    }
 
     public Queue getQueue_after() {
         return queue_after;
@@ -70,8 +79,10 @@ public class Machine implements ISubject, Runnable{
         return currentProduct;
     }
 
-    public void setCurrentProduct(Product currentProduct) {
+    public void setCurrentProduct(Product currentProduct) throws InterruptedException {
         this.currentProduct = currentProduct;
+        t.run();
+        produce();
     }
 
     public LinkedList<Queue> getQueues() {
@@ -93,40 +104,32 @@ public class Machine implements ISubject, Runnable{
     public boolean isEmpty() {
         return empty;
     }
-    public Machine() {
-        Thread t = new Thread(this, "Thread " + id);
-    }
+
     public void setEmpty(boolean empty) {
         this.empty = empty;
     }
+
     public void produce() throws InterruptedException
     {
-        while (true) {
-            synchronized (this)
-            {
-                System.out.println("Product" + currentProduct.id);
-                Random r = new Random();
-                int time = r.nextInt((10000 - 1000) + 1) + 1000;
-                Thread.sleep(time);
-                consume();
-            }
-        }
+            System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
+            Random r = new Random();
+            int time = r.nextInt((1000 - 100) + 1) + 100;
+            Thread.sleep(time);
+            consume();
+
     }
 
     // Function called by consumer thread
-    public void consume()
-    {
-        while (true) {
-            synchronized (this)
-            {
-                queue_after.addProduct(currentProduct);
-                notifyAllObservers();
-            }
-        }
+    public void consume() throws InterruptedException {
+            queue_after.addProduct(currentProduct);
+            empty = true;
+            notifyAllObservers();
+
+
     }
 
     @Override
-    public void notifyAllObservers() {
+    public void notifyAllObservers() throws InterruptedException {
         for (Queue queue : queues) {
             queue.update();
         }
@@ -135,7 +138,46 @@ public class Machine implements ISubject, Runnable{
 
     @Override
     public void run() {
+        while (!empty){
+            try {
+                notifyAllObservers();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 
+        public static void main(String[] args) throws InterruptedException {
+            Queue after = new Queue();
+            LinkedList<Queue> queue1 = new LinkedList<>();
+            Queue start = new Queue();
+            queue1.add(start);
+
+            LinkedList<Queue> queue2 = new LinkedList<>();
+            queue2.add(after);
+
+            LinkedList<Machine> machinesOfQueue2 = new LinkedList<>();
+            start.addProduct(new Product(Color.BLACK));
+            start.addProduct(new Product(Color.BLUE));
+            start.addProduct(new Product(Color.RED));
+            LinkedList<Machine> machinesOfQueue1 = new LinkedList<>();
+
+            Machine m1 = new Machine("first");
+            Machine m2 = new Machine("second");
+
+            m1.setQueues(queue1);
+            m1.setQueue_after(after);
+
+            m2.setQueue_after(new Queue());
+            m2.setQueues(queue2);
+
+            machinesOfQueue2.add(m2);
+            after.setMachines(machinesOfQueue2);
+
+            machinesOfQueue1.add(m1);
+            start.setMachines(machinesOfQueue1);
+
+            start.sendProduct();
+        }
 }

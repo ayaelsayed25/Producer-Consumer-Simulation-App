@@ -1,4 +1,4 @@
 public interface ISubject {
-    void notifyAllObservers();
+    void notifyAllObservers() throws InterruptedException;
 
 }
