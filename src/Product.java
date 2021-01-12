@@ -1,25 +1,33 @@
 import java.awt.*;
+import java.util.Random;
 
 public class Product {
 	public String id;
-	Color color;
-//	int x;
-//	int y;
-//	int width;
-//	int height;
-	public Product(Color color)
+	String color;
+	int time ;
+	public Product()
 	{
-		this.color = color;
-//		this.x = x;
-//		this.y = y;
-//		this.width = width;
-//		this.height= height;
-		
+		this.color = getRandomColor();
+		this.time = getRandomTime();
+
 	}
-//
-//   public void paint(Graphics g)
-//   {
-//    g.setColor(color);
-//    g.fillOval(x, y, width, height);
-//   }
+	public int getRandomTime(){
+		Random r=new Random();
+		return r.nextInt((1000 - 100) + 1) + 100;
+	}
+	public  String getRandomColor() {
+
+		// create random object - reuse this as often as possible
+		Random random = new Random();
+
+		// create a big random number - maximum is ffffff (hex) = 16777215 (dez)
+		int nextInt = random.nextInt(0xffffff + 1);
+
+		// format it as hexadecimal string (with hashtag and leading zeros)
+		String colorCode = String.format("#%06x", nextInt);
+
+		// print it
+		return  colorCode;
+	}
+
 }
