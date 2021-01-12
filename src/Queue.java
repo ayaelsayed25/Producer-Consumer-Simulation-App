@@ -13,7 +13,6 @@ public class Queue implements Observer {
     public LinkedList<Machine> getMachines() {
         return machines;
     }
-
     public void setMachines(LinkedList<Machine> machines) {
         this.machines = machines;
     }
