@@ -5,6 +5,7 @@ import org.jgraph.graph.BasicMarqueeHandler;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Set;
 
 
 //
@@ -62,8 +63,6 @@ public class Machine implements ISubject, Runnable{
     boolean empty =  true;
     public Machine(String id) {
         this.setId(id);
-        t= new Thread(this, "Thread " + id);
-        t.start();
     }
 
     public Queue getQueue_after() {
@@ -81,7 +80,12 @@ public class Machine implements ISubject, Runnable{
 
     public void setCurrentProduct(Product currentProduct) throws InterruptedException {
         this.currentProduct = currentProduct;
-        t.run();
+        System.out.println(Thread.getAllStackTraces().keySet().size());
+
+        t= new Thread(this, "Thread " + id);
+        t.start();
+        System.out.println(Thread.getAllStackTraces().keySet().size());
+
         produce();
     }
 
@@ -123,6 +127,8 @@ public class Machine implements ISubject, Runnable{
     public void consume() throws InterruptedException {
             queue_after.addProduct(currentProduct);
             empty = true;
+            t.join();
+            System.out.println(t.isAlive());
             notifyAllObservers();
 
 
@@ -179,5 +185,7 @@ public class Machine implements ISubject, Runnable{
             start.setMachines(machinesOfQueue1);
 
             start.sendProduct();
+            System.out.println(Thread.getAllStackTraces().keySet().size());
+
         }
 }
