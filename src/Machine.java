@@ -1,7 +1,4 @@
 // consumer problem.
-
-import org.jgraph.graph.BasicMarqueeHandler;
-
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
