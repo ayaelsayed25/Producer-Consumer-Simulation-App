@@ -1,4 +1,11 @@
 // consumer problem.
+
+
+
+import com.mxgraph.model.mxCell;
+import com.mxgraph.swing.mxGraphComponent;
+import com.mxgraph.view.mxGraph;
+
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
@@ -9,11 +16,40 @@ public class Machine implements ISubject, Runnable{
     LinkedList<Queue> queues;
     Queue queue_after;
     Product currentProduct;
-    String id = "";
+    String id ;
+    mxCell vertex;
+    mxGraph graph;
     boolean empty =  true;
-    public Machine(String id) {
+    public Machine(String id, mxGraph graph ,Object parent,int x,int y,LinkedList<Queue> queues,Queue queue_after) {
         this.setId(id);
+        this.graph=graph;
+        setQueues(queues);
+        setQueue_after(queue_after);
+        addToqueue(this);
+        drawMachine(graph,parent,x,y);
+
+
     }
+    public void addToqueue(Machine machine){
+        for (Queue q:queues){
+            q.addMachine(machine);
+        }
+    }
+
+    public void drawMachine (mxGraph graph ,Object parent,int x,int y){
+        vertex = (mxCell) graph.insertVertex(parent, null, "M"+id, x, y,80, 30,"strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
+        vertex.setId("5");
+        vertex.setEdge(false);
+        vertex.setConnectable(true);
+        vertex.setStyle("fillColor=#ffffff");
+        graph.refresh();
+        vertex.setAttribute("strokeColor","#66FF00");
+
+        graph.insertEdge(parent, null, "", this.vertex,queue_after.vertex,"startArrow=none;endArrow=diamond;strokeWidth=4;strokeColor=#66FF00");
+        for(Queue q:queues) {
+            graph.insertEdge(parent, null, "", q.vertex, this.vertex, "startArrow=none;endArrow=diamond;strokeWidth=4;strokeColor=#66FF00");
+        }
+        }
 
     public Queue getQueue_after() {
         return queue_after;
@@ -31,7 +67,6 @@ public class Machine implements ISubject, Runnable{
     public void setCurrentProduct(Product currentProduct) throws InterruptedException {
         this.currentProduct = currentProduct;
         System.out.println(Thread.getAllStackTraces().keySet().size());
-
         t= new Thread(this, "Thread " + id);
         t.start();
         System.out.println(Thread.getAllStackTraces().keySet().size());
@@ -52,7 +87,7 @@ public class Machine implements ISubject, Runnable{
     }
 
     public void setId(String id) {
-        this.id = id;
+       this.id=id;
     }
 
     public boolean isEmpty() {
@@ -65,16 +100,20 @@ public class Machine implements ISubject, Runnable{
 
     public void produce() throws InterruptedException
     {
-            System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
-            Random r = new Random();
-            int time = r.nextInt((1000 - 100) + 1) + 100;
+            vertex.setStyle("fillColor="+currentProduct.color);
+            graph.refresh();
+            Random r=new Random();
+            int time= r.nextInt((1000 - 100) + 1) + 100;
             Thread.sleep(time);
+            System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
             consume();
 
     }
 
     // Function called by consumer thread
     public void consume() throws InterruptedException {
+            vertex.setStyle("fillColor=#ffffff");
+            graph.refresh();
             queue_after.addProduct(currentProduct);
             empty = true;
             t.join();
@@ -101,37 +140,6 @@ public class Machine implements ISubject, Runnable{
     }
 
         public static void main(String[] args) throws InterruptedException {
-            Queue after = new Queue();
-            LinkedList<Queue> queue1 = new LinkedList<>();
-            Queue start = new Queue();
-            queue1.add(start);
-
-            LinkedList<Queue> queue2 = new LinkedList<>();
-            queue2.add(after);
-
-            LinkedList<Machine> machinesOfQueue2 = new LinkedList<>();
-            start.addProduct(new Product(Color.BLACK));
-            start.addProduct(new Product(Color.BLUE));
-            start.addProduct(new Product(Color.RED));
-            LinkedList<Machine> machinesOfQueue1 = new LinkedList<>();
-
-            Machine m1 = new Machine("first");
-            Machine m2 = new Machine("second");
-
-            m1.setQueues(queue1);
-            m1.setQueue_after(after);
-
-            m2.setQueue_after(new Queue());
-            m2.setQueues(queue2);
-
-            machinesOfQueue2.add(m2);
-            after.setMachines(machinesOfQueue2);
-
-            machinesOfQueue1.add(m1);
-            start.setMachines(machinesOfQueue1);
-
-            start.sendProduct();
-            System.out.println(Thread.getAllStackTraces().keySet().size());
 
         }
 }

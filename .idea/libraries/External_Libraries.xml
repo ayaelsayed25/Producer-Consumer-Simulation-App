@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="External Libraries">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/External Libraries/mxgraph-core-3.9.12.jar!/" />
+      <root url="jar://$PROJECT_DIR$/External Libraries/jgraphx-4.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
