@@ -11,16 +11,12 @@ public class ThreadExample {
         final PC pc = new PC();
 
         // Create producer thread 
-        Thread t1 = new Thread(new Runnable() {
-            @Override
-            public void run()
-            {
-                try {
-                    pc.produce();
-                }
-                catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        Thread t1 = new Thread(() -> {
+            try {
+                pc.produce();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
 

@@ -1,12 +1,9 @@
 // consumer problem.
 
 
-
 import com.mxgraph.model.mxCell;
-import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
-import java.awt.*;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -117,7 +114,16 @@ public class Machine implements ISubject, Runnable{
     public void consume() throws InterruptedException {
             vertex.setStyle("fillColor=#ffffff");
             graph.refresh();
-            queue_after.addProduct(currentProduct);
+        Object[] cells = graph.getChildVertices(graph.getDefaultParent());
+        System.out.println("*****************************");
+        for (Object c : cells)
+        {
+            mxCell cell = (mxCell) c;
+            System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
+        }
+        System.out.println("*****************************");
+
+        queue_after.addProduct(currentProduct);
             empty = true;
             t.join();
             System.out.println(t.isAlive());

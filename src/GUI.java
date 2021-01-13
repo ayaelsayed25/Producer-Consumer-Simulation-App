@@ -115,12 +115,14 @@ public class GUI extends JFrame {
                 //---- startBtn ----
                 startBtn.setText("Start");
                 startBtn.addActionListener(e -> {
+
                     try {
-                        this.simulate();
-                        startBtn.setBackground(Color.PINK);
+                        Simulation simulation = new Simulation(start);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
+                    startBtn.setBackground(Color.PINK);
+
                 });
                 buttonBar.add(startBtn, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -154,22 +156,6 @@ public class GUI extends JFrame {
     private JButton replayBtn;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
-    public void simulate() throws InterruptedException {
-        start.addProduct(new Product());
-        start.addProduct(new Product());
-        start.addProduct(new Product());
-
-        start.sendProduct();
-//        System.out.println(Thread.getAllStackTraces().keySet().size());
-        System.out.println("END");
-        Object[] cells = graph.getChildVertices(graph.getDefaultParent());
-        for (Object c : cells)
-        {
-            mxCell cell = (mxCell) c;
-            System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
-        }
-    }
-
     public void addMachine(){
 
     }
@@ -178,7 +164,7 @@ public class GUI extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 600);
         frame.setVisible(true);
-        frame.simulate();
+        Simulation simulation = new Simulation(frame.start);
     }
 
 }
