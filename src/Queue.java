@@ -9,6 +9,7 @@ public class Queue implements Observer {
     private LinkedList<Product> products;
     mxCell vertex;
     String id;
+    mxGraph graph;
 
     public Queue( String id,mxGraph graph,Object parent,int x,int y) {
         machines = new LinkedList<>();
@@ -18,11 +19,10 @@ public class Queue implements Observer {
     }
 
     public void drawQueue(mxGraph graph,Object parent,int x,int y){
-        vertex = (mxCell) graph.insertVertex(parent, null, "Q"+id, x, y,30, 30,"strokeColor=#66FF00;fillColor=#FFFFFF;shape=rectangle");
-        vertex.setId("5");
+        this.graph = graph;
+        vertex = (mxCell) graph.insertVertex(parent, "Q"+id, "Q"+id+"\n0 Products", x, y,80, 30,"strokeColor=#66FF00;fillColor=#FFFFFF;shape=rectangle");
         vertex.setEdge(false);
         vertex.setConnectable(false);
-
         vertex.setStyle("fillColor=#FFFFFF");
         vertex.setAttribute("strokeColor","#66FF00");
 
@@ -69,6 +69,8 @@ public class Queue implements Observer {
 
     @Override
     public void update() throws InterruptedException {
+        vertex.setValue("Q"+id+"\n"+products.size()+" Products");
+        graph.refresh();
         sendProduct();
     }
 }

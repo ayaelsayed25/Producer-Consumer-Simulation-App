@@ -12,6 +12,8 @@ import java.util.Random;
 
 
 public class Machine implements ISubject, Runnable{
+    final int minimum = 100;
+    final int maximum = 1000;
     Thread t;
     LinkedList<Queue> queues;
     Queue queue_after;
@@ -20,14 +22,14 @@ public class Machine implements ISubject, Runnable{
     mxCell vertex;
     mxGraph graph;
     boolean empty =  true;
-    public Machine(String id, mxGraph graph ,Object parent,int x,int y,LinkedList<Queue> queues,Queue queue_after) {
+    public Machine(String id, mxGraph graph ,Object parent,int x,int y,Queue queueBefore,Queue queue_after) {
         this.setId(id);
         this.graph=graph;
-        setQueues(queues);
+        queues = new LinkedList<>();
+        addQueueBefore(queueBefore);
         setQueue_after(queue_after);
         addToqueue(this);
         drawMachine(graph,parent,x,y);
-
 
     }
     public void addToqueue(Machine machine){
@@ -35,19 +37,20 @@ public class Machine implements ISubject, Runnable{
             q.addMachine(machine);
         }
     }
-
+    public void addQueueBefore(Queue queue){
+        queues.add(queue);
+    }
     public void drawMachine (mxGraph graph ,Object parent,int x,int y){
-        vertex = (mxCell) graph.insertVertex(parent, null, "M"+id, x, y,80, 30,"strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
-        vertex.setId("5");
+        vertex = (mxCell) graph.insertVertex(parent,"M"+id, "M"+id, x, y,30, 30,"strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
         vertex.setEdge(false);
         vertex.setConnectable(true);
         vertex.setStyle("fillColor=#ffffff");
         graph.refresh();
         vertex.setAttribute("strokeColor","#66FF00");
 
-        graph.insertEdge(parent, null, "", this.vertex,queue_after.vertex,"startArrow=none;endArrow=diamond;strokeWidth=4;strokeColor=#66FF00");
+        graph.insertEdge(parent, null, "", this.vertex,queue_after.vertex,"startArrow=none;strokeWidth=2;strokeColor=#66FF00");
         for(Queue q:queues) {
-            graph.insertEdge(parent, null, "", q.vertex, this.vertex, "startArrow=none;endArrow=diamond;strokeWidth=4;strokeColor=#66FF00");
+            graph.insertEdge(parent, null, "", q.vertex, this.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
         }
         }
 
@@ -103,7 +106,7 @@ public class Machine implements ISubject, Runnable{
             vertex.setStyle("fillColor="+currentProduct.color);
             graph.refresh();
             Random r=new Random();
-            int time= r.nextInt((1000 - 100) + 1) + 100;
+            int time= r.nextInt((maximum - minimum) + 1) + minimum;
             Thread.sleep(time);
             System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
             consume();
@@ -138,8 +141,4 @@ public class Machine implements ISubject, Runnable{
             }
 
     }
-
-        public static void main(String[] args) throws InterruptedException {
-
-        }
 }

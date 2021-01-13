@@ -1,43 +1,42 @@
 import com.mxgraph.model.mxCell;
+import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.GroupLayout;
 import javax.swing.border.*;
 
 public class GUI extends JFrame {
+
+    ArrayList<Machine> machines = new ArrayList<>();
+    ArrayList<Queue> queues = new ArrayList<>();
+    mxGraph graph;
+    Object parent;
+    Queue start;
     public GUI() {
         super("Hello, World!");
         initComponents();
-        mxGraph graph = new mxGraph();
-        Object parent = graph.getDefaultParent();
-//        graph.setCellsSelectable(false);
+
+        graph = new mxGraph();
+        parent = graph.getDefaultParent();
+        graph.setCellsSelectable(false);
 
         graph.getModel().beginUpdate();
 
         try
         {
-            mxCell v1 = (mxCell) graph.insertVertex(parent, null, "source", 20, 20,80, 30,"strokeColor=#66FF00;fillColor=#FFFFFF;shape=ellipse");
-            v1.setId("5");
-            v1.setEdge(false);
-            v1.setConnectable(false);
+            start = new Queue(String.valueOf(queues.size()),graph,parent,500,50);
+            queues.add(start);
+            Queue after = new Queue(String.valueOf(queues.size()),graph,parent,200,50);
+            queues.add(after);
 
-//            v1.setStyle("fillColor=#FFFFFF");
-            v1.setAttribute("strokeColor","#66FF00");
-            Object v2 = graph.insertVertex(parent, null, "destination", 200, 20,80, 30,"image");
-//            Object v1 = graph.insertVertex(parent, null, "Hello", 20, 20, 80,
-//                    30);
-//            Object v2 = graph.insertVertex(parent, null, "World!", 240, 150,
-//                    80, 30);
-            Object v3 = graph.insertVertex(parent, null, "World!", 180, 100,
-                    80, 30);
-            Object v4 = graph.insertVertex(parent, null, "World!", 280, 100,
-                    80, 30);
-            Object v5 = graph.insertVertex(parent, null, "World!", 380, 500,
-                    80, 30);
-            graph.insertEdge(parent, null, "", v1,v2,"startArrow=none;strokeWidth=2;strokeColor=#66FF00");
+            machines.add( new Machine(String.valueOf(machines.size()),graph,parent,400,50,start,after));
+            machines.add(new Machine(String.valueOf(machines.size()),graph,parent,150,50,after,new Queue(String.valueOf(queues.size()),graph,parent,10,50)));
 
             Object[] cells = graph.getChildVertices(graph.getDefaultParent());
             for (Object c : cells)
@@ -46,9 +45,6 @@ public class GUI extends JFrame {
                 System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
             }
 
-//            graph.insertEdge(parent, null, "Edge", v1, v2);
-//            graph.insertEdge(parent, null, "Edge", v1, v3);
-
         }
         finally
         {
@@ -56,6 +52,7 @@ public class GUI extends JFrame {
         }
 
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
+//        ((mxGraphModel)(graph.getModel())).getC
         contentPanel.add(graphComponent);
     }
 
@@ -117,6 +114,14 @@ public class GUI extends JFrame {
 
                 //---- startBtn ----
                 startBtn.setText("Start");
+                startBtn.addActionListener(e -> {
+                    try {
+                        this.simulate();
+                        startBtn.setBackground(Color.PINK);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                });
                 buttonBar.add(startBtn, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 5), 0, 0));
@@ -131,8 +136,10 @@ public class GUI extends JFrame {
         }
         contentPane.add(dialogPane, BorderLayout.CENTER);
         pack();
-        setLocationRelativeTo(getOwner());
+//        setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
+
+
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
@@ -146,11 +153,32 @@ public class GUI extends JFrame {
     private JButton startBtn;
     private JButton replayBtn;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
-    public static void main(String[] args)
-    {
+
+    public void simulate() throws InterruptedException {
+        start.addProduct(new Product());
+        start.addProduct(new Product());
+        start.addProduct(new Product());
+
+        start.sendProduct();
+//        System.out.println(Thread.getAllStackTraces().keySet().size());
+        System.out.println("END");
+        Object[] cells = graph.getChildVertices(graph.getDefaultParent());
+        for (Object c : cells)
+        {
+            mxCell cell = (mxCell) c;
+            System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
+        }
+    }
+
+    public void addMachine(){
+
+    }
+    public static void main(String[] args) throws InterruptedException {
         GUI frame = new GUI();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 320);
+        frame.setSize(1000, 600);
         frame.setVisible(true);
+        frame.simulate();
     }
+
 }
