@@ -102,7 +102,9 @@ public class Machine implements ISubject, Runnable{
     {
             vertex.setStyle("fillColor="+currentProduct.color);
             graph.refresh();
-            Thread.sleep(currentProduct.time);
+            Random r=new Random();
+            int time= r.nextInt((1000 - 100) + 1) + 100;
+            Thread.sleep(time);
             System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
             consume();
 

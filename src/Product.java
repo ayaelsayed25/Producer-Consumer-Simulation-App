@@ -4,17 +4,14 @@ import java.util.Random;
 public class Product {
 	public String id;
 	String color;
-	int time ;
+	//int time ;
 	public Product()
 	{
 		this.color = getRandomColor();
-		this.time = getRandomTime();
+		//this.time = getRandomTime();
 
 	}
-	public int getRandomTime(){
-		Random r=new Random();
-		return r.nextInt((1000 - 100) + 1) + 100;
-	}
+
 	public  String getRandomColor() {
 
 		// create random object - reuse this as often as possible
@@ -29,5 +26,10 @@ public class Product {
 		// print it
 		return  colorCode;
 	}
+
+/*	public int getRandomTime(){
+		Random r=new Random();
+		return r.nextInt((1000 - 100) + 1) + 100;
+	}*/
 
 }
