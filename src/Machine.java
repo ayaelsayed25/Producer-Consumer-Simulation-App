@@ -13,7 +13,7 @@ public class Machine implements ISubject, Runnable {
     final int minimum = 100;
     final int maximum = 1000;
     Thread t;
-    LinkedList<Queue> queues;
+    LinkedList<Queue> queues = new LinkedList<>();
     Queue queue_after;
     Product currentProduct;
     String id;
@@ -21,11 +21,11 @@ public class Machine implements ISubject, Runnable {
     mxGraph graph;
     boolean empty = true;
 
-    public Machine(String id, mxGraph graph, Object parent, int x, int y, Queue queueBefore, Queue queue_after) {
+    public Machine(String id, mxGraph graph, Object parent, int x, int y, LinkedList<Queue> queueBefore, Queue queue_after) {
         this.setId(id);
         this.graph = graph;
-        this.queues = new LinkedList();
-        this.addQueueBefore(queueBefore);
+        this.queues = queueBefore;
+//        this.addQueueBefore(queueBefore);
         this.setQueue_after(queue_after);
         this.addToqueue(this);
         this.drawMachine(graph, parent, x, y);
@@ -46,18 +46,16 @@ public class Machine implements ISubject, Runnable {
     }
 
     public void drawMachine(mxGraph graph, Object parent, int x, int y) {
-        this.vertex = (mxCell)graph.insertVertex(parent, "M" + this.id, "M" + this.id, (double)x, (double)y, 30.0D, 30.0D, "strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
+        this.vertex = (mxCell)graph.insertVertex(parent, "M" + this.id, "M" + this.id, x, y, 30.0D, 30.0D, "strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
         this.vertex.setEdge(false);
         this.vertex.setConnectable(true);
         this.vertex.setStyle("fillColor=#ffffff");
         graph.refresh();
         this.vertex.setAttribute("strokeColor", "#66FF00");
-        graph.insertEdge(parent, (String)null, "", this.vertex, this.queue_after.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
-        Iterator var5 = this.queues.iterator();
+        graph.insertEdge(parent, null, "", this.vertex, this.queue_after.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
 
-        while(var5.hasNext()) {
-            Queue q = (Queue)var5.next();
-            graph.insertEdge(parent, (String)null, "", q.vertex, this.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
+        for (Queue q : this.queues) {
+            graph.insertEdge(parent, null, "", q.vertex, this.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
         }
 
     }
