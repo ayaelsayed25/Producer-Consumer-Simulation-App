@@ -4,11 +4,9 @@ import com.mxgraph.swing.mxGraphComponent;
 import com.mxgraph.view.mxGraph;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.GroupLayout;
 import javax.swing.border.*;
 
 public class GUI extends JFrame {
@@ -19,25 +17,45 @@ public class GUI extends JFrame {
     Object parent;
     Queue start;
     Simulation simulation;
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    double width = screenSize.getWidth();
     public GUI() {
         super("Hello, World!");
         initComponents();
 
-        graph = new mxGraph();
-        parent = graph.getDefaultParent();
-        graph.setCellsSelectable(false);
+        graph = new mxGraph(){
+            @Override
+            public boolean isCellSelectable(Object cell)
+            {
+                if (model.isEdge(cell))
+                {
+                    return false;
+                }
 
+                return super.isCellSelectable(cell);
+            }
+        };
+        parent = graph.getDefaultParent();
+        graph.setAllowDanglingEdges(false);
         graph.getModel().beginUpdate();
 
         try
         {
-            start = new Queue(String.valueOf(queues.size()),graph,parent,500,50);
+            String id = String.valueOf(queues.size());
+            start = new Queue(id,graph,parent,800,50);
+            fromQueueCombo.addItem("Q"+id);
+            toQueueCombo.addItem("Q"+id);
             queues.add(start);
-            Queue after = new Queue(String.valueOf(queues.size()),graph,parent,200,50);
-            queues.add(after);
 
+            id = String.valueOf(queues.size());
+            Queue after = new Queue(id,graph,parent,200,50);
+            queues.add(after);
+            fromQueueCombo.addItem("Q"+id);
+            toQueueCombo.addItem("Q"+id);
             machines.add( new Machine(String.valueOf(machines.size()),graph,parent,400,50,start,after));
-            machines.add(new Machine(String.valueOf(machines.size()),graph,parent,150,50,after,new Queue(String.valueOf(queues.size()),graph,parent,10,50)));
+//            machines.add(new Machine(String.valueOf(machines.size()),graph,parent,150,50,after,new Queue(String.valueOf(queues.size())
+//                    ,graph,parent,10,50)));
+//            addMachine();
 
             Object[] cells = graph.getChildVertices(graph.getDefaultParent());
             for (Object c : cells)
@@ -62,11 +80,19 @@ public class GUI extends JFrame {
         contentPanel = new JPanel();
         buttonBar = new JPanel();
         addMachineBtn = new JButton();
-        queuesCombo = new JComboBox<>();
         addQueueBtn = new JButton();
-        machinesQueue = new JComboBox<>();
+        toQueueCombo = new JComboBox<>();
+        fromQueueCombo = new JComboBox<>();
+
+
         startBtn = new JButton();
         replayBtn = new JButton();
+        SpinnerNumberModel model1 = new SpinnerNumberModel(5.0, 1.0, 100.0, 1.0);
+        l = new JLabel();
+
+        // add text to label
+        l.setText("label text");
+        JSpinner spin = new JSpinner(model1);
 
         //======== this ========
         var contentPane = getContentPane();
@@ -87,51 +113,82 @@ public class GUI extends JFrame {
 
                 //---- addMachineBtn ----
                 addMachineBtn.setText("Add Machine");
+                addMachineBtn.addActionListener(e -> addMachine());
                 buttonBar.add(addMachineBtn, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 5, 5), 0, 0));
 
-                //---- queuesCombo ----
-                queuesCombo.setModel(new DefaultComboBoxModel<>(new String[] {
-                    "insert after queue"
+                //---- fromQueueCombo ----
+                toQueueCombo.setModel(new DefaultComboBoxModel<>(new String[] {
+                    "before queue"
                 }));
-                buttonBar.add(queuesCombo, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
+                buttonBar.add(toQueueCombo, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 5, 5), 0, 0));
+
+                //---- toQueueCombo ----
+                fromQueueCombo.setModel(new DefaultComboBoxModel<>(new String[] {
+                        "after queue"
+                }));
+                buttonBar.add(fromQueueCombo, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 5, 5), 0, 0));
 
                 //---- addQueueBtn ----
                 addQueueBtn.setText("Add Queue");
-                buttonBar.add(addQueueBtn, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
+                addQueueBtn.addActionListener(e -> addQueue());
+                buttonBar.add(addQueueBtn, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 5, 5), 0, 0));
-
-                //---- machinesQueue ----
-                machinesQueue.setModel(new DefaultComboBoxModel<>(new String[] {
-                    "Insert after machine"
-                }));
-                buttonBar.add(machinesQueue, new GridBagConstraints(3, 0, 1, 1, 0.0, 0.0,
-                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                    new Insets(0, 0, 5, 0), 0, 0));
 
                 //---- startBtn ----
                 startBtn.setText("Start");
                 startBtn.addActionListener(e -> {
                     try {
-                        simulation = new Simulation(start);
+                        spin.commitEdit();
+                        double numberOfProducts =  (Double) spin.getValue();
+                        simulation = new Simulation(start,numberOfProducts);
+                        for (Queue queue : queues) {
+                            mxCell cell = (mxCell) ((mxGraphModel) (graph.getModel())).getCell(queue.id);
+                            queue.resetProducts();
+                            cell.setValue(queue.id + "\n" + 0 + " Products");
+                        }
+
+                        Object[] cells = graph.getChildVertices(graph.getDefaultParent());
+                        for (Object c : cells)
+                        {
+                            mxCell cell = (mxCell) c;
+                            System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
+                        }
+                        graph.refresh();
                         simulation.play(false);
-                    } catch (InterruptedException ex) {
+                    } catch (InterruptedException | ParseException ex) {
                         ex.printStackTrace();
                     }
                     startBtn.setBackground(Color.PINK);
 
                 });
-                buttonBar.add(startBtn, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+                buttonBar.add(startBtn, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 5), 0, 0));
+                //---- spinLabel ----
+                l.setText("Number of products :");
+                buttonBar.add(l, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
+
+
+                //---- productsSpinner ----
+
+                buttonBar.add(spin, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                        new Insets(0, 0, 0, 5), 0, 0));
+
+
 
                 //---- replayBtn ----
                 replayBtn.setText("Replay");
-                buttonBar.add(replayBtn, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
+                buttonBar.add(replayBtn, new GridBagConstraints(3, 1, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 5), 0, 0));
                 }
@@ -159,14 +216,31 @@ public class GUI extends JFrame {
     private JPanel contentPanel;
     private JPanel buttonBar;
     private JButton addMachineBtn;
-    private JComboBox<String> queuesCombo;
+    private JComboBox<String> fromQueueCombo;
+    private JComboBox<String> toQueueCombo;
     private JButton addQueueBtn;
-    private JComboBox<String> machinesQueue;
     private JButton startBtn;
     private JButton replayBtn;
+    private JLabel l;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     public void addMachine(){
+
+        String before = Objects.requireNonNull(fromQueueCombo.getSelectedItem()).toString();
+        String to = Objects.requireNonNull(toQueueCombo.getSelectedItem()).toString();
+        machines.add( new Machine(String.valueOf(machines.size()),graph,parent,400,200,queues.get(Integer.parseInt(before.substring(1))),
+                queues.get(Integer.parseInt(to.substring(1)))));
+
+        String id = String.valueOf(machines.size()-1);
+    }
+    public void addQueue(){
+//        String before = Objects.requireNonNull(fromMachineCombo.getSelectedItem()).toString();
+//        String to = Objects.requireNonNull(toMachineCombo.getSelectedItem()).toString();
+        String id = String.valueOf(queues.size());
+        queues.add(new Queue(id,graph,parent,500,100));
+
+        fromQueueCombo.addItem("Q"+id);
+        toQueueCombo.addItem("Q"+id);
 
     }
     public static void main(String[] args) throws InterruptedException {

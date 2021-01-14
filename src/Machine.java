@@ -1,84 +1,90 @@
-// consumer problem.
-
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
-
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
-
-public class Machine implements ISubject, Runnable{
+public class Machine implements ISubject, Runnable {
     final int minimum = 100;
     final int maximum = 1000;
     Thread t;
     LinkedList<Queue> queues;
     Queue queue_after;
     Product currentProduct;
-    String id ;
+    String id;
     mxCell vertex;
     mxGraph graph;
-    int time;
-    boolean empty =  true;
-    public Machine(String id, mxGraph graph ,Object parent,int x,int y,Queue queueBefore,Queue queue_after) {
-        Random r=new Random();
-        time= r.nextInt((maximum - minimum) + 1) + minimum;
-        this.setId(id);
-        this.graph=graph;
-        queues = new LinkedList<>();
-        addQueueBefore(queueBefore);
-        setQueue_after(queue_after);
-        addToqueue(this);
-        drawMachine(graph,parent,x,y);
+    boolean empty = true;
 
+    public Machine(String id, mxGraph graph, Object parent, int x, int y, Queue queueBefore, Queue queue_after) {
+        this.setId(id);
+        this.graph = graph;
+        this.queues = new LinkedList();
+        this.addQueueBefore(queueBefore);
+        this.setQueue_after(queue_after);
+        this.addToqueue(this);
+        this.drawMachine(graph, parent, x, y);
     }
-    public void addToqueue(Machine machine){
-        for (Queue q:queues){
+
+    public void addToqueue(Machine machine) {
+        Iterator var2 = this.queues.iterator();
+
+        while(var2.hasNext()) {
+            Queue q = (Queue)var2.next();
             q.addMachine(machine);
         }
-    }
-    public void addQueueBefore(Queue queue){
-        queues.add(queue);
-    }
-    public void drawMachine (mxGraph graph ,Object parent,int x,int y){
-        vertex = (mxCell) graph.insertVertex(parent,"M"+id, "M"+id, x, y,30, 30,"strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
-        vertex.setEdge(false);
-        vertex.setConnectable(true);
-        vertex.setStyle("fillColor=#ffffff");
-        graph.refresh();
-        vertex.setAttribute("strokeColor","#66FF00");
 
-        graph.insertEdge(parent, null, "", this.vertex,queue_after.vertex,"startArrow=none;strokeWidth=2;strokeColor=#66FF00");
-        for(Queue q:queues) {
-            graph.insertEdge(parent, null, "", q.vertex, this.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
+    }
+
+    public void addQueueBefore(Queue queue) {
+        this.queues.add(queue);
+    }
+
+    public void drawMachine(mxGraph graph, Object parent, int x, int y) {
+        this.vertex = (mxCell)graph.insertVertex(parent, "M" + this.id, "M" + this.id, (double)x, (double)y, 30.0D, 30.0D, "strokeColor=#66FF00;fillColor=#ffffff;shape=ellipse");
+        this.vertex.setEdge(false);
+        this.vertex.setConnectable(true);
+        this.vertex.setStyle("fillColor=#ffffff");
+        graph.refresh();
+        this.vertex.setAttribute("strokeColor", "#66FF00");
+        graph.insertEdge(parent, (String)null, "", this.vertex, this.queue_after.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
+        Iterator var5 = this.queues.iterator();
+
+        while(var5.hasNext()) {
+            Queue q = (Queue)var5.next();
+            graph.insertEdge(parent, (String)null, "", q.vertex, this.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
         }
-        }
+
+    }
 
     public Queue getQueue_after() {
-        return queue_after;
+        return this.queue_after;
     }
 
     public void setQueue_after(Queue queue_after) {
         this.queue_after = queue_after;
     }
 
-
     public Product getCurrentProduct() {
-        return currentProduct;
+        return this.currentProduct;
     }
 
     public void setCurrentProduct(Product currentProduct) throws InterruptedException {
         this.currentProduct = currentProduct;
         System.out.println(Thread.getAllStackTraces().keySet().size());
-        t= new Thread(this, "Thread " + id);
-        t.start();
+        this.t = new Thread(this, "Thread " + this.id);
+        this.t.start();
         System.out.println(Thread.getAllStackTraces().keySet().size());
-
-        produce();
+        this.produce();
     }
 
     public LinkedList<Queue> getQueues() {
-        return queues;
+        return this.queues;
     }
 
     public void setQueues(LinkedList<Queue> queues) {
@@ -86,66 +92,59 @@ public class Machine implements ISubject, Runnable{
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(String id) {
-       this.id=id;
+        this.id = id;
     }
 
     public boolean isEmpty() {
-        return empty;
+        return this.empty;
     }
 
     public void setEmpty(boolean empty) {
         this.empty = empty;
     }
 
-    public void produce() throws InterruptedException
-    {
-            vertex.setStyle("fillColor="+currentProduct.color);
-            graph.refresh();
-            Thread.sleep(time);
-            System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
-            consume();
-
+    public void produce() throws InterruptedException {
+        this.vertex.setStyle("fillColor=" + this.currentProduct.color);
+        this.graph.refresh();
+        Random r = new Random();
+        int time = r.nextInt(901) + 100;
+        Thread.sleep((long)time);
+        String var10001 = this.currentProduct.color;
+        System.out.println("Product" + var10001 + "by machine" + this.getId());
+        this.consume();
     }
 
-    // Function called by consumer thread
     public void consume() throws InterruptedException {
-            vertex.setStyle("fillColor=#ffffff");
-            graph.refresh();
-        Object[] cells = graph.getChildVertices(graph.getDefaultParent());
-        System.out.println("*****************************");
-        for (Object c : cells)
-        {
-            mxCell cell = (mxCell) c;
-            System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
-        }
-        System.out.println("*****************************");
-
-        queue_after.addProduct(currentProduct);
-            empty = true;
-            t.join();
-            System.out.println(t.isAlive());
-            notifyAllObservers();
+        this.vertex.setStyle("fillColor=#ffffff");
+        this.graph.refresh();
+        this.queue_after.addProduct(this.currentProduct);
+        this.empty = true;
+        this.t.join();
+        System.out.println(this.t.isAlive());
+        this.notifyAllObservers();
     }
 
-    @Override
     public void notifyAllObservers() throws InterruptedException {
-        for (Queue queue : queues) {
+        Iterator var1 = this.queues.iterator();
+
+        while(var1.hasNext()) {
+            Queue queue = (Queue)var1.next();
             queue.update();
         }
-        queue_after.update();
+
+        this.queue_after.update();
     }
 
-    @Override
     public void run() {
-            try {
-                notifyAllObservers();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            this.notifyAllObservers();
+        } catch (InterruptedException var2) {
+            var2.printStackTrace();
+        }
 
     }
 }

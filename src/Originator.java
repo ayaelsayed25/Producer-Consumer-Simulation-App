@@ -5,7 +5,10 @@ import java.util.Random;
 public class Originator {
 
     String color;
-
+    int rate;
+    Random r=new Random();
+    final int maximum = 1000;
+    final int minimum = 100;
     public void setColor()
     {
         this.color = getRandomColor();
@@ -15,6 +18,7 @@ public class Originator {
     {
         Product product = new Product();
         product.setColor(color);
+        product.setRate(rate);
         return product;
     }
     public  String getRandomColor() {
@@ -30,5 +34,8 @@ public class Originator {
 
         // print it
         return  colorCode;
+    }
+    public void setRate(){
+        rate= r.nextInt((maximum - minimum) + 1) + minimum;
     }
 }

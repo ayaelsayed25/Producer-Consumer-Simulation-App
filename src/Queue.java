@@ -47,6 +47,9 @@ public class Queue implements Observer {
     public void setProducts(LinkedList<Product> products) {
         this.products = products;
     }
+    public void resetProducts(){
+        this.products.clear();
+    }
     public String getId() {
         return id;
     }
