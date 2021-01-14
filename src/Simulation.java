@@ -3,7 +3,7 @@ public class Simulation {
     Queue start;
     CareTaker careTaker;
     double numberOfProducts;
-
+    Thread thread;
     public Simulation(Queue start,double numberOfProducts) {
         this.start = start;
         this.numberOfProducts = numberOfProducts;
@@ -11,7 +11,7 @@ public class Simulation {
     }
     public void play(boolean replay) {
 
-        Thread thread = new Thread(() -> {
+            thread = new Thread(() -> {
             System.out.println("WHY WHY WHY");
             if(!replay)
             {
@@ -28,14 +28,12 @@ public class Simulation {
                         e.printStackTrace();
                     }
                         start.addProduct(product);
-                        try {
-                            start.sendProduct();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
                         careTaker.add(product);
-
-
+                }
+                try {
+                    start.sendProduct();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
 

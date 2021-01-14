@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class Machine implements ISubject, Runnable {
-    final int minimum = 100;
-    final int maximum = 1000;
+    final int minimum = 10000;
+    final int maximum = 30000;
     Thread t;
     LinkedList<Queue> queues;
     Queue queue_after;
@@ -111,7 +111,7 @@ public class Machine implements ISubject, Runnable {
         this.vertex.setStyle("fillColor=" + this.currentProduct.color);
         this.graph.refresh();
         Random r = new Random();
-        int time = r.nextInt(901) + 100;
+        int time = r.nextInt((maximum - minimum) + 1) + minimum;;
         Thread.sleep(time);
         String var10001 = this.currentProduct.color;
         System.out.println("Product" + var10001 + "by machine" + this.getId());
@@ -140,11 +140,10 @@ public class Machine implements ISubject, Runnable {
     }
 
     public void run() {
-        try {
-            this.notifyAllObservers();
-        } catch (InterruptedException var2) {
-            var2.printStackTrace();
+            try {
+                this.notifyAllObservers();
+            } catch (InterruptedException var2) {
+                var2.printStackTrace();
+            }
         }
-
-    }
 }
