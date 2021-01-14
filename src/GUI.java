@@ -20,7 +20,7 @@ public class GUI extends JFrame {
     Queue start;
     Simulation simulation;
     LinkedList<Queue> queuesBefore = new LinkedList<>();
-    final JButton fromQueue = new JButton("After");
+    final JButton fromQueue = new JButton("Choose Queue");
     final JPopupMenu menu = new JPopupMenu();
     public GUI() {
         super("Producer Consumer");
@@ -244,10 +244,10 @@ public class GUI extends JFrame {
 //        String before = Objects.requireNonNull(fromQueueCombo.getSelectedItem()).toString();
         String to = Objects.requireNonNull(toQueueCombo.getSelectedItem()).toString();
         Queue toQueue = queues.get(Integer.parseInt(to.substring(1)));
-        LinkedList<Queue> machineQueues = new LinkedList<>();
-        while (!queuesBefore.isEmpty()){
-            machineQueues.add(queuesBefore.pop());
-        }
+        LinkedList<Queue> machineQueues = new LinkedList<>(queuesBefore);
+        //        while (!queuesBefore.isEmpty()){
+//            machineQueues.add(queuesBefore.pop());
+//        }
         if(Machine.checkValidity(queues,machineQueues,toQueue))
         machines.add(new Machine(String.valueOf(machines.size()), graph, parent, 400, 200, machineQueues,
                 toQueue ));
