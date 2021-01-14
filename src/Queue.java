@@ -72,8 +72,8 @@ public class Queue implements Observer {
 
     @Override
     public void update() throws InterruptedException {
+        sendProduct();
         vertex.setValue("Q"+id+"\n"+products.size()+" Products");
         graph.refresh();
-        sendProduct();
     }
 }

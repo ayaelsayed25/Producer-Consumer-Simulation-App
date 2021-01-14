@@ -112,7 +112,7 @@ public class Machine implements ISubject, Runnable {
         this.graph.refresh();
         Random r = new Random();
         int time = r.nextInt(901) + 100;
-        Thread.sleep((long)time);
+        Thread.sleep(time);
         String var10001 = this.currentProduct.color;
         System.out.println("Product" + var10001 + "by machine" + this.getId());
         this.consume();

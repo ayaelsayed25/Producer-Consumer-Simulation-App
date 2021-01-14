@@ -22,8 +22,20 @@ public class Simulation {
                     originator.setColor();
                     originator.setRate();
                     Product product = originator.getProduct();
-                    start.addProduct(product);
-                    careTaker.add(product);
+                    try {
+                        Thread.sleep(product.rate);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                        start.addProduct(product);
+                        try {
+                            start.sendProduct();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        careTaker.add(product);
+
+
                 }
 
 
@@ -31,14 +43,21 @@ public class Simulation {
             else
             {   for (int i = 0; i <numberOfProducts ; i++) {
                 System.out.println(careTaker.products);
-                start.addProduct(careTaker.get());
+                Product product = careTaker.get();
+                try {
+                    Thread.sleep(product.rate);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                start.addProduct(product);
+                try {
+                    start.sendProduct();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             }
-            try {
-                start.sendProduct();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
             System.out.println("END");
         });
         thread.start();
