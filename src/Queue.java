@@ -72,6 +72,7 @@ public class Queue implements Observer {
         for (Machine machine : machines) {
             Product product;
             if (machine.empty) {
+                //while ?
                 if (!products.isEmpty()){
                     product = products.removeLast();
                     machine.setEmpty(false);

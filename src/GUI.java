@@ -23,7 +23,7 @@ public class GUI extends JFrame {
     final JButton fromQueue = new JButton("After");
     final JPopupMenu menu = new JPopupMenu();
     public GUI() {
-        super("Hello, World!");
+        super("Producer Consumer");
         initComponents();
 
         graph = new mxGraph(){
@@ -46,6 +46,7 @@ public class GUI extends JFrame {
         {
             String id = String.valueOf(queues.size());
             start = new Queue(id,graph,parent,1300,50);
+            start.setEdge(false);
 //            fromQueueCombo.addItem("Q"+id);
             addMenuItem(id);
             toQueueCombo.addItem("Q"+id);
@@ -243,17 +244,16 @@ public class GUI extends JFrame {
 //        String before = Objects.requireNonNull(fromQueueCombo.getSelectedItem()).toString();
         String to = Objects.requireNonNull(toQueueCombo.getSelectedItem()).toString();
         Queue toQueue = queues.get(Integer.parseInt(to.substring(1)));
-//        toQueue.setEdge(tr);
-//        for (Queue queue : queues) {
-//            if (queue.isEdge())
-//
-//        }
-        LinkedList<Queue> queues = new LinkedList<>();
+        LinkedList<Queue> machineQueues = new LinkedList<>();
         while (!queuesBefore.isEmpty()){
-            queues.add(queuesBefore.pop());
+            machineQueues.add(queuesBefore.pop());
         }
-        machines.add(new Machine(String.valueOf(machines.size()), graph, parent, 400, 200, queues,
+        if(Machine.checkValidity(queues,machineQueues))
+        machines.add(new Machine(String.valueOf(machines.size()), graph, parent, 400, 200, machineQueues,
                 toQueue ));
+        else {
+            System.out.println("ANA MAMA");
+        }
 
     }
     public void addQueue(){

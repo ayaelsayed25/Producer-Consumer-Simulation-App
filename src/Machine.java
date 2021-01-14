@@ -5,15 +5,17 @@
 
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
 public class Machine implements ISubject, Runnable {
-    final int minimum = 10000;
-    final int maximum = 30000;
+    final int minimum = 1000;
+    final int maximum = 3000;
     Thread t;
-    LinkedList<Queue> queues = new LinkedList<>();
+    LinkedList<Queue> queues;
     Queue queue_after;
     Product currentProduct;
     String id;
@@ -25,17 +27,14 @@ public class Machine implements ISubject, Runnable {
         this.setId(id);
         this.graph = graph;
         this.queues = queueBefore;
-//        this.addQueueBefore(queueBefore);
         this.setQueue_after(queue_after);
         this.addToqueue(this);
         this.drawMachine(graph, parent, x, y);
     }
 
     public void addToqueue(Machine machine) {
-        Iterator var2 = this.queues.iterator();
 
-        while(var2.hasNext()) {
-            Queue q = (Queue)var2.next();
+        for (Queue q : this.queues) {
             q.addMachine(machine);
         }
 
@@ -56,8 +55,17 @@ public class Machine implements ISubject, Runnable {
 
         for (Queue q : this.queues) {
             graph.insertEdge(parent, null, "", q.vertex, this.vertex, "startArrow=none;strokeWidth=2;strokeColor=#66FF00");
+            q.setEdge(false);
         }
 
+    }
+
+    public static boolean checkValidity(ArrayList<Queue> allQueues, LinkedList<Queue>toQueue){
+        for (Queue queue : allQueues) {
+            if (queue.isEdge() && !toQueue.contains(queue))
+                return true;
+        }
+    return false;
     }
 
     public Queue getQueue_after() {
@@ -127,10 +135,8 @@ public class Machine implements ISubject, Runnable {
     }
 
     public void notifyAllObservers() throws InterruptedException {
-        Iterator var1 = this.queues.iterator();
 
-        while(var1.hasNext()) {
-            Queue queue = (Queue)var1.next();
+        for (Queue queue : this.queues) {
             queue.update();
         }
 
