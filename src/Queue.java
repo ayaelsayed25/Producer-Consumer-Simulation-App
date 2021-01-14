@@ -11,6 +11,16 @@ public class Queue implements Observer {
     String id;
     mxGraph graph;
 
+    public boolean isEdge() {
+        return isEdge;
+    }
+
+    public void setEdge(boolean edge) {
+        isEdge = edge;
+    }
+
+    private boolean isEdge = true;
+
     public Queue( String id,mxGraph graph,Object parent,int x,int y) {
         machines = new LinkedList<>();
         products = new LinkedList<>();
@@ -60,6 +70,7 @@ public class Queue implements Observer {
 
     public void sendProduct() throws InterruptedException {
         for (Machine machine : machines) {
+            Product product;
             if (machine.empty) {
                 if (products.isEmpty())return;
                 Product product = products.removeLast();
