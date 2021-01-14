@@ -63,6 +63,7 @@ public class Queue implements Observer {
             if (machine.empty) {
                 if (products.isEmpty())return;
                 Product product = products.removeLast();
+                System.out.println("helloooooooooooooooooooooooooo" + machine.id);
                 machine.setEmpty(false);
                 machine.setCurrentProduct(product);
             }
