@@ -70,15 +70,12 @@ public class Queue implements Observer {
 
     public void sendProduct() throws InterruptedException {
         for (Machine machine : machines) {
-            Product product;
             if (machine.empty) {
-                //while ?
-                if (!products.isEmpty()){
-                    product = products.removeLast();
-                    machine.setEmpty(false);
-                    machine.setCurrentProduct(product);
-                }
-
+                if (products.isEmpty())return;
+                Product product = products.removeLast();
+                System.out.println("helloooooooooooooooooooooooooo" + machine.id);
+                machine.setEmpty(false);
+                machine.setCurrentProduct(product);
             }
         }
     }

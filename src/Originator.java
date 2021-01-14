@@ -7,8 +7,8 @@ public class Originator {
     String color;
     int rate;
     Random r=new Random();
-    final int maximum = 200;
-    final int minimum = 100;
+    final int maximum = 6000;
+    final int minimum = 5000;
     public void setColor()
     {
         this.color = getRandomColor();

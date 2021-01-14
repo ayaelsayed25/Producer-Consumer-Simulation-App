@@ -6,14 +6,11 @@
 import com.mxgraph.model.mxCell;
 import com.mxgraph.view.mxGraph;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 public class Machine implements ISubject, Runnable {
     final int minimum = 1000;
-    final int maximum = 3000;
+    final int maximum = 5000;
     Thread t;
     LinkedList<Queue> queues;
     Queue queue_after;
@@ -21,9 +18,12 @@ public class Machine implements ISubject, Runnable {
     String id;
     mxCell vertex;
     mxGraph graph;
+    int time;
     boolean empty = true;
 
     public Machine(String id, mxGraph graph, Object parent, int x, int y, LinkedList<Queue> queueBefore, Queue queue_after) {
+        Random r = new Random();
+        time = r.nextInt((maximum - minimum) + 1) + minimum;
         this.setId(id);
         this.graph = graph;
         this.queues = queueBefore;
@@ -118,12 +118,18 @@ public class Machine implements ISubject, Runnable {
     public void produce() throws InterruptedException {
         this.vertex.setStyle("fillColor=" + this.currentProduct.color);
         this.graph.refresh();
-        Random r = new Random();
-        int time = r.nextInt((maximum - minimum) + 1) + minimum;
-        Thread.sleep(time);
+        Timer timer = new Timer();
         String var10001 = this.currentProduct.color;
-        System.out.println("Product" + var10001 + "by machine" + this.getId());
-        this.consume();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    consume();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, time);
     }
 
     public void consume() throws InterruptedException {
