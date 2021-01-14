@@ -19,6 +19,7 @@ public class GUI extends JFrame {
     Simulation simulation;
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     double width = screenSize.getWidth();
+    double height = screenSize.getHeight();
     public GUI() {
         super("Hello, World!");
         initComponents();
@@ -53,16 +54,6 @@ public class GUI extends JFrame {
             fromQueueCombo.addItem("Q"+id);
             toQueueCombo.addItem("Q"+id);
             machines.add( new Machine(String.valueOf(machines.size()),graph,parent,400,50,start,after));
-//            machines.add(new Machine(String.valueOf(machines.size()),graph,parent,150,50,after,new Queue(String.valueOf(queues.size())
-//                    ,graph,parent,10,50)));
-//            addMachine();
-
-            Object[] cells = graph.getChildVertices(graph.getDefaultParent());
-            for (Object c : cells)
-            {
-                mxCell cell = (mxCell) c;
-                System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
-            }
 
         }
         finally
@@ -71,28 +62,28 @@ public class GUI extends JFrame {
         }
 
         mxGraphComponent graphComponent = new mxGraphComponent(graph);
-//        ((mxGraphModel)(graph.getModel())).getC
-        contentPanel.add(graphComponent);
+        dialogPane.add(graphComponent);
     }
 
     private void initComponents() {
+        // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
         dialogPane = new JPanel();
         contentPanel = new JPanel();
-        buttonBar = new JPanel();
-        addMachineBtn = new JButton();
-        addQueueBtn = new JButton();
+        JPanel buttonBar = new JPanel();
+        JButton addMachineBtn = new JButton();
+        JButton addQueueBtn = new JButton();
         toQueueCombo = new JComboBox<>();
         fromQueueCombo = new JComboBox<>();
 
 
         startBtn = new JButton();
-        replayBtn = new JButton();
-        SpinnerNumberModel model1 = new SpinnerNumberModel(5.0, 1.0, 100.0, 1.0);
-        l = new JLabel();
+        JButton replayBtn = new JButton();
+        SpinnerNumberModel model = new SpinnerNumberModel(5.0, 1.0, 100.0, 1.0);
+        JLabel l = new JLabel();
 
         // add text to label
         l.setText("label text");
-        JSpinner spin = new JSpinner(model1);
+        JSpinner spin = new JSpinner(model);
 
         //======== this ========
         var contentPane = getContentPane();
@@ -100,7 +91,7 @@ public class GUI extends JFrame {
 
         //======== dialogPane ========
         {
-            dialogPane.setBorder(new EmptyBorder(12, 12, 12, 12));
+            dialogPane.setBorder(new EmptyBorder(5, 5, 5, 5));
             dialogPane.setLayout(new BorderLayout());
             dialogPane.add(contentPanel, BorderLayout.CENTER);
 
@@ -149,9 +140,9 @@ public class GUI extends JFrame {
                         double numberOfProducts =  (Double) spin.getValue();
                         simulation = new Simulation(start,numberOfProducts);
                         for (Queue queue : queues) {
-                            mxCell cell = (mxCell) ((mxGraphModel) (graph.getModel())).getCell(queue.id);
+                            mxCell cell = (mxCell) ((mxGraphModel) (graph.getModel())).getCell("Q"+queue.id);
                             queue.resetProducts();
-                            cell.setValue(queue.id + "\n" + 0 + " Products");
+                            cell.setValue("Q"+queue.id + "\n" + 0 + " Products");
                         }
 
                         Object[] cells = graph.getChildVertices(graph.getDefaultParent());
@@ -162,10 +153,9 @@ public class GUI extends JFrame {
                         }
                         graph.refresh();
                         simulation.play(false);
-                    } catch (InterruptedException | ParseException ex) {
+                    } catch (ParseException ex) {
                         ex.printStackTrace();
                     }
-                    startBtn.setBackground(Color.PINK);
 
                 });
                 buttonBar.add(startBtn, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
@@ -183,7 +173,6 @@ public class GUI extends JFrame {
                 buttonBar.add(spin, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
                         GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                         new Insets(0, 0, 0, 5), 0, 0));
-
 
 
                 //---- replayBtn ----
@@ -211,17 +200,11 @@ public class GUI extends JFrame {
 
     }
 
-    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    private JPanel dialogPane;
     private JPanel contentPanel;
-    private JPanel buttonBar;
-    private JButton addMachineBtn;
+    private JPanel dialogPane;
     private JComboBox<String> fromQueueCombo;
     private JComboBox<String> toQueueCombo;
-    private JButton addQueueBtn;
     private JButton startBtn;
-    private JButton replayBtn;
-    private JLabel l;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     public void addMachine(){
@@ -230,23 +213,25 @@ public class GUI extends JFrame {
         String to = Objects.requireNonNull(toQueueCombo.getSelectedItem()).toString();
         machines.add( new Machine(String.valueOf(machines.size()),graph,parent,400,200,queues.get(Integer.parseInt(before.substring(1))),
                 queues.get(Integer.parseInt(to.substring(1)))));
-
-        String id = String.valueOf(machines.size()-1);
     }
     public void addQueue(){
-//        String before = Objects.requireNonNull(fromMachineCombo.getSelectedItem()).toString();
-//        String to = Objects.requireNonNull(toMachineCombo.getSelectedItem()).toString();
         String id = String.valueOf(queues.size());
         queues.add(new Queue(id,graph,parent,500,100));
-
         fromQueueCombo.addItem("Q"+id);
         toQueueCombo.addItem("Q"+id);
+        Object[] cells = graph.getChildVertices(graph.getDefaultParent());
+        for (Object c : cells)
+        {
+            mxCell cell = (mxCell) c;
+            System.out.println("id: " + cell.getId() + ", value: " + cell.getValue() );
+        }
 
     }
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         GUI frame = new GUI();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 600);
+//        frame.setExtendedState(java.awt.Frame.MAXIMIZED_BOTH);
         frame.setVisible(true);
     }
 

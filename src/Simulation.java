@@ -9,7 +9,7 @@ public class Simulation {
         this.numberOfProducts = numberOfProducts;
 
     }
-    public void play(boolean replay) throws InterruptedException {
+    public void play(boolean replay) {
 
         Thread thread = new Thread(() -> {
             System.out.println("WHY WHY WHY");
@@ -42,7 +42,6 @@ public class Simulation {
             System.out.println("END");
         });
         thread.start();
-//        thread.join();
     }
 
 }
