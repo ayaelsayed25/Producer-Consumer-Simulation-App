@@ -60,7 +60,9 @@ public class Machine implements ISubject, Runnable {
 
     }
 
-    public static boolean checkValidity(ArrayList<Queue> allQueues, LinkedList<Queue>toQueue){
+    public static boolean checkValidity(ArrayList<Queue> allQueues, LinkedList<Queue>toQueue,Queue after){
+        if(toQueue.contains(after))
+            return false;
         for (Queue queue : allQueues) {
             if (queue.isEdge() && !toQueue.contains(queue))
                 return true;
@@ -117,7 +119,7 @@ public class Machine implements ISubject, Runnable {
         this.vertex.setStyle("fillColor=" + this.currentProduct.color);
         this.graph.refresh();
         Random r = new Random();
-        int time = r.nextInt((maximum - minimum) + 1) + minimum;;
+        int time = r.nextInt((maximum - minimum) + 1) + minimum;
         Thread.sleep(time);
         String var10001 = this.currentProduct.color;
         System.out.println("Product" + var10001 + "by machine" + this.getId());

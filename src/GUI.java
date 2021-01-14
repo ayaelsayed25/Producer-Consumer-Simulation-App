@@ -248,7 +248,7 @@ public class GUI extends JFrame {
         while (!queuesBefore.isEmpty()){
             machineQueues.add(queuesBefore.pop());
         }
-        if(Machine.checkValidity(queues,machineQueues))
+        if(Machine.checkValidity(queues,machineQueues,toQueue))
         machines.add(new Machine(String.valueOf(machines.size()), graph, parent, 400, 200, machineQueues,
                 toQueue ));
         else {
