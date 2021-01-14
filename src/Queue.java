@@ -70,7 +70,6 @@ public class Queue implements Observer {
 
     public void sendProduct() throws InterruptedException {
         for (Machine machine : machines) {
-            Product product;
             if (machine.empty) {
                 if (products.isEmpty())return;
                 Product product = products.removeLast();
