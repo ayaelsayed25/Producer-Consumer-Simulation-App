@@ -18,8 +18,11 @@ public class Machine implements ISubject, Runnable{
     String id ;
     mxCell vertex;
     mxGraph graph;
+    int time;
     boolean empty =  true;
     public Machine(String id, mxGraph graph ,Object parent,int x,int y,Queue queueBefore,Queue queue_after) {
+        Random r=new Random();
+        time= r.nextInt((maximum - minimum) + 1) + minimum;
         this.setId(id);
         this.graph=graph;
         queues = new LinkedList<>();
@@ -102,8 +105,6 @@ public class Machine implements ISubject, Runnable{
     {
             vertex.setStyle("fillColor="+currentProduct.color);
             graph.refresh();
-            Random r=new Random();
-            int time= r.nextInt((maximum - minimum) + 1) + minimum;
             Thread.sleep(time);
             System.out.println("Product" + currentProduct.color + "by machine" + this.getId());
             consume();

@@ -18,6 +18,7 @@ public class GUI extends JFrame {
     mxGraph graph;
     Object parent;
     Queue start;
+    Simulation simulation;
     public GUI() {
         super("Hello, World!");
         initComponents();
@@ -115,9 +116,9 @@ public class GUI extends JFrame {
                 //---- startBtn ----
                 startBtn.setText("Start");
                 startBtn.addActionListener(e -> {
-
                     try {
-                        Simulation simulation = new Simulation(start);
+                        simulation = new Simulation(start);
+                        simulation.play(false);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -133,8 +134,17 @@ public class GUI extends JFrame {
                 buttonBar.add(replayBtn, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0,
                     GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                     new Insets(0, 0, 0, 5), 0, 0));
-            }
-            dialogPane.add(buttonBar, BorderLayout.SOUTH);
+                }
+                dialogPane.add(buttonBar, BorderLayout.SOUTH);
+                replayBtn.addActionListener(e -> {
+                    try {
+                        simulation.play(true);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                    startBtn.setBackground(Color.PINK);
+
+                });
         }
         contentPane.add(dialogPane, BorderLayout.CENTER);
         pack();
@@ -164,7 +174,6 @@ public class GUI extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1000, 600);
         frame.setVisible(true);
-        Simulation simulation = new Simulation(frame.start);
     }
 
 }
